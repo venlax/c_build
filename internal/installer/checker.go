@@ -1,20 +1,21 @@
 package installer
 
 import (
+	"fmt"
 	"strings"
 
 	"github.com/venlax/c_build/internal/config"
 	"github.com/venlax/c_build/internal/docker"
 )
 
-func Check(libInfo config.LibInfo, libPath string) bool {
+func Check(libInfo config.LibInfo) bool {
 	pkg_mgr := GetPkgMgr("dpkg")
 
 	if version := (&pkg_mgr).runGetLibVersion(libInfo); version != libInfo.Version {
 		return false;
 	}
 
-	if sha256sum, err := Sha256File(libPath); err == nil {
+	if sha256sum, err := Sha256File(libInfo.Path); err == nil {
 		if sha256sum != libInfo.Sha256 {
 			return false;
 		}
@@ -32,6 +33,7 @@ func Sha256File(path string) (string, error) {
 	err := docker.Run([]string {"sha256sum", path}, &sb)
 
 	if err != nil {
+		fmt.Println(sb.String())
 		return "", err
 	}
 

@@ -10,7 +10,7 @@ type LibInfo struct {
 	Name string
 	Version string
 	Sha256 string
-	FullName string // the lib's fullname in the env, e.g. openssl -> libopenssl.xx.so. if not provided, then = lib{$Name}.a/.so
+	Path string
 	Type LibType
 }
 

@@ -1,7 +1,9 @@
 package main
 
 import (
+	"fmt"
 	"os"
+	"strings"
 
 	"github.com/venlax/c_build/internal/builder"
 	"github.com/venlax/c_build/internal/config"
@@ -9,19 +11,35 @@ import (
 	"github.com/venlax/c_build/internal/installer"
 )
 
+var	Debug bool = false
+
 func main() {
 	args := os.Args
 	create := false
+	configPath := ""
 	for _, arg := range args {
 		if arg == "-c" || arg == "--create" {
 			create = true
 		}
+		if arg == "-d" || arg == "--debug" {
+			Debug = true
+		}
+		if strings.HasPrefix(arg,"--input") {
+			fmt.Sscanf(arg, "--input=%s", &configPath)	
+		}
 	}
 
-	config.Init()
+	if !Debug {
+		panic("dockerfile generation not fully implemented, use -d/--debug")
+	}
+
+	config.Init(configPath)
 	docker.Init(create)
+
+	docker.Run([]string{"export", "CC=/usr/bin/x86_64-linux-gnu-gcc-14"}, os.Stdout)
+	docker.Run([]string{"export", "CXX=/usr/bin/x86_64-linux-gnu-g++-14"}, os.Stdout)
+
 	installer.Init()
-	// docker.Run([]string{"apt", "list", "-a", "nginx"})
 	installer.Install()
 	builder.Build()
 }

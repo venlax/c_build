@@ -44,7 +44,7 @@ func Init(create bool) {
 			Image: config.Image,
 			Cmd: []string{"tail", "-f", "/dev/null"},
 			WorkingDir: config.WorkingDir,
-			// Env: config.Env,
+			Env: config.Env,
 		},&container.HostConfig {
 			Binds: []string{
 				config.HostBuildRootDir + ":" + config.WorkingDir,
@@ -107,7 +107,7 @@ func Run(command []string, writer io.Writer) error {
 	
 	// _, err = io.Copy(os.Stdout, hijacked_resp.Reader)
 	// _, err = io.Copy(writer, hijacked_resp.Reader)
-	_, err = stdcopy.StdCopy(writer, io.Discard, hijacked_resp.Reader)
+	_, err = stdcopy.StdCopy(writer, os.Stderr, hijacked_resp.Reader)
 
 	if err != nil {
 		return err

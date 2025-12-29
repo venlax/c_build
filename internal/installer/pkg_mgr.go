@@ -39,7 +39,7 @@ var pkgMgrs map[string]pkgMgr = map[string]pkgMgr {
 			NoArgs,
 		}, 
 		command {
-			[]string{"apt", "install", "-y"},
+			[]string{"apt", "install", "-y", "--allow-downgrades"},
 			Tail,
 		},  
 		command {
