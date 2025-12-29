@@ -3,6 +3,7 @@ package config
 import (
 	"fmt"
 	"strings"
+	"time"
 )
 
 func Init(configPath string) {
@@ -38,4 +39,19 @@ func Init(configPath string) {
 		Libs = append(Libs, lib)
 		// fmt.Printf("%+v\n", lib)
 	}
+
+    t, _ := time.Parse(time.RFC3339, Cfg.MetaData.BuildTimeStamp)
+	fmt.Printf("set SOURCE_DATE_EPOCH=%d\n", t.Unix())
+	Env = append(Env, fmt.Sprintf("SOURCE_DATE_EPOCH=%d", t.Unix()))
+
+	CFLAGS := fmt.Sprintf("CFLAGS=-ffile-prefix-map=%s=.",WorkingDir)
+	CXXFLAGS := fmt.Sprintf("CXXFLAGS=-ffile-prefix-map=%s=.", WorkingDir)
+
+	fmt.Printf("set %s\n", CFLAGS)
+	fmt.Printf("set %s\n", CXXFLAGS)
+
+	Env = append(Env, CFLAGS, CXXFLAGS)
+
+	fmt.Printf("Container Env: %v\n", Env)
+
 }

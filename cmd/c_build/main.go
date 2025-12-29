@@ -36,9 +36,6 @@ func main() {
 	config.Init(configPath)
 	docker.Init(create)
 
-	docker.Run([]string{"export", "CC=/usr/bin/x86_64-linux-gnu-gcc-14"}, os.Stdout)
-	docker.Run([]string{"export", "CXX=/usr/bin/x86_64-linux-gnu-g++-14"}, os.Stdout)
-
 	installer.Init()
 	installer.Install()
 	builder.Build()

@@ -13,4 +13,6 @@ var Env []string = []string {
 	// "https_proxy=http://127.0.0.1:7890",
 	"CC=/usr/bin/x86_64-linux-gnu-gcc-14",
 	"CXX=/usr/bin/x86_64-linux-gnu-g++-14",
+	// "CFLAGS=-ffile-prefix-map=/ws=.",
+	// "CXXFLAGS=-ffile-prefix-map=/ws=.",
 }

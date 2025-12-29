@@ -14,7 +14,6 @@ func Init() {
 
 
 func Install() {
-
 	pkgMgr := GetPkgMgr(config.PkgMgrName)
 
 	for _, libInfo := range config.Libs {
@@ -24,7 +23,8 @@ func Install() {
 	}
 
 	for _, libInfo := range config.Libs {
-		fmt.Println(Sha256File(libInfo.Path))
-		(&pkgMgr).runInstall(libInfo)
+		if !Check(libInfo) {
+			panic(fmt.Errorf("dependency <%s> version:<%s> path:<%s> not match the required.", libInfo.Name, libInfo.Version, libInfo.Path))
+		}
 	}
 }

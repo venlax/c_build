@@ -2,8 +2,10 @@ package builder
 
 import (
 	// "fmt"
+	"fmt"
 	"os"
 
+	"github.com/venlax/c_build/internal/config"
 	"github.com/venlax/c_build/internal/docker"
 	// "github.com/venlax/c_build/internal/installer"
 )
@@ -19,7 +21,14 @@ func Build() {
 	// 	panic(err)
 	// }
 
-	err := docker.Run([]string{"make", "all"}, os.Stdout)
+	err := docker.Run([]string{"make", "clean"}, os.Stdout)
+	if err != nil {
+		panic(err)
+	}
+
+	MakeCommand := fmt.Sprintf("umask %s && make", config.Cfg.MetaData.Umask)
+
+	err = docker.Run([]string{"sh", "-c", MakeCommand}, os.Stdout)
 	if err != nil {
 		panic(err)
 	}
