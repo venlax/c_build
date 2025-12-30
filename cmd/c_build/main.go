@@ -11,34 +11,42 @@ import (
 	"github.com/venlax/c_build/internal/installer"
 )
 
-var	Debug bool = false
+var	debug bool = false
 
 func main() {
 	args := os.Args
 	create := false
 	configPath := ""
+	dstDirPath := "./build" // default gen dockerfile in the project build dir
 	for _, arg := range args {
 		if arg == "-c" || arg == "--create" {
 			create = true
 		}
 		if arg == "-d" || arg == "--debug" {
-			Debug = true
+			debug = true
 		}
 		if strings.HasPrefix(arg,"--input") {
 			fmt.Sscanf(arg, "--input=%s", &configPath)	
 		}
-	}
-
-	if !Debug {
-		panic("dockerfile generation not fully implemented, use -d/--debug")
+		if strings.HasPrefix(arg, "--output") {
+			fmt.Sscanf(arg, "--output=%s", &dstDirPath)
+		}
 	}
 
 	config.Init(configPath)
+
+	if !debug {
+		builder.RenderDockerfile(dstDirPath)
+		return
+	}
+
 	docker.Init(create)
 
 	installer.Init()
 	installer.Install()
+	
 	builder.Build()
+	builder.Check()
 }
 
 // import (

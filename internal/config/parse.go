@@ -10,7 +10,7 @@ import (
 type Config struct {
 	MetaData MetaData `yaml:"metadata"`
 	Dependencies []Dependency `yaml:"dependencies"`
-	Artifacts []Artifact `yaml:"artifact"`
+	Artifacts []Artifact `yaml:"artifacts"`
 }
 
 type MetaData struct {

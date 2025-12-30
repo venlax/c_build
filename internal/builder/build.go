@@ -7,6 +7,7 @@ import (
 
 	"github.com/venlax/c_build/internal/config"
 	"github.com/venlax/c_build/internal/docker"
+	"github.com/venlax/c_build/internal/installer"
 	// "github.com/venlax/c_build/internal/installer"
 )
 
@@ -40,4 +41,17 @@ func Build() {
 	// 	panic(err)
 	// }
 
+}
+
+func Check()  {
+	for _, artifact := range config.Cfg.Artifacts {
+		sha256sum, err := installer.Sha256File(config.WorkingDir + "/" + artifact.Path)
+		if err != nil {
+			panic(err)
+		}
+		if sha256sum != artifact.Hash {
+			panic(fmt.Errorf("build result [%s] hash [%s] not match the artifact hash [%s]", artifact.Path, sha256sum[:8], artifact.Hash[:8]))			
+		}
+		fmt.Printf("[OK]: %s=%s\n", artifact.Path, sha256sum[:8])
+	}
 }

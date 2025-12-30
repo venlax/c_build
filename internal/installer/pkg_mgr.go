@@ -91,8 +91,21 @@ func (p *pkgMgr) runInstall(libInfo config.LibInfo) {
 	// go to checker please
 } 
 
+func (p *pkgMgr) runInstallAll() {
+	tmp := make([]string, len(config.Libs))
+	for i, libInfo := range config.Libs {
+		var arg string
+		if libInfo.Version == "" {
+			arg = libInfo.Name
+		} else {
+			arg = libInfo.Name + "=" + libInfo.Version
+		}
+		tmp[i] = arg
+	} 
+	runCommand(p.installCommand, tmp, os.Stdout)
+} 
+
 func (p *pkgMgr) runGetLibVersion(libInfo config.LibInfo) string {
-	// TODO return string of the version
 	var sb strings.Builder 
 	runCommand(p.getLibVersionCommand, []string{libInfo.Name}, &sb)
 	versionRawStr := sb.String()
@@ -122,4 +135,25 @@ func runCommand(c command, args []string, writer io.Writer) {
 	if (err != nil) {
 		panic(err)
 	}
+}
+
+func commandStr(c command, args []string) string {
+	cmd := make([]string, 0)
+	switch c.passWay {
+	case NoArgs:
+		cmd = append(cmd, c.strs...)
+	case Tail:
+		cmd = append(cmd, c.strs...)
+		cmd = append(cmd, args...)
+	case Xargs:
+		cmd = append(cmd, "sh", "-c")
+		realCmdStr := fmt.Sprintf(`echo %s | xargs %s`, strings.Join(args, ", "), strings.Join(c.strs, " "))
+		cmd = append(cmd, realCmdStr)		
+		// cmd = append(cmd, "xargs")
+		// cmd = append(cmd, args...)
+		// cmd = append(cmd)
+	default:
+		panic("Something wrong.")
+	}
+	return strings.Join(cmd, " ")
 }
