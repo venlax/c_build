@@ -37,6 +37,7 @@ func main() {
 
 	if !debug {
 		builder.RenderDockerfile(dstDirPath)
+		builder.RenderShellfile(dstDirPath)
 		return
 	}
 

@@ -52,6 +52,12 @@ func Init(configPath string) {
 
 	Env = append(Env, CFLAGS, CXXFLAGS)
 
+	locales := strings.Split(Cfg.MetaData.Locale, ";")
+
+	Env = append(Env, locales...)
+
+	fmt.Printf("set locale: %s\n", Cfg.MetaData.Locale)
+
 	fmt.Printf("Container Env: %v\n", Env)
 
 }

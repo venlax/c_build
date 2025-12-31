@@ -2,6 +2,7 @@ package builder
 
 import (
 	"bytes"
+	"fmt"
 	"os"
 	"strings"
 	"text/template"
@@ -11,7 +12,7 @@ import (
 )
 
 
-var dockerfileTmpl string = `FROM {{.Image}}
+const dockerfileTmpl string = `FROM {{.Image}}
 
 {{- if .Env }}
 ENV {{ join .Env " \\\n    " }}
@@ -25,7 +26,7 @@ RUN {{.}}
 {{- end }}
 {{- end }}
 
-CMD {{.BuildCmd}}
+CMD ["/bin/sh", "-c", "{{ .BuildCmd }}"]
 `
 
 type DockerfileTmplData struct {
@@ -33,7 +34,7 @@ type DockerfileTmplData struct {
 	Env []string
 	WorkDir string
 	InstallCmds []string
-	BuildCmd []string
+	BuildCmd string
 }
 
 func RenderDockerfile(dstDir string) {
@@ -53,6 +54,10 @@ func RenderDockerfile(dstDir string) {
 	
 	err = tmpl.Execute(&buf, genDockerfileData())
 
+	if err != nil {
+		panic(err)
+	}
+
 	_, err = f.Write(buf.Bytes())
 
 	if err != nil {
@@ -66,6 +71,6 @@ func genDockerfileData() DockerfileTmplData {
 	data.WorkDir = config.WorkingDir
 	data.Env = config.Env
 	data.InstallCmds = installer.InstallStrs()
-	data.BuildCmd = append(data.BuildCmd, "make")
+	data.BuildCmd = fmt.Sprintf("umask %s && make", config.Cfg.MetaData.Umask)
 	return data
 }
