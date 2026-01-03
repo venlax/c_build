@@ -69,8 +69,10 @@ fi
 # ---------- build ----------
 echo "==> Building image ${IMAGE_NAME}"
 docker build \
+  --network host \
   --pull \
-  -t "${IMAGE_NAME}" 
+  -t "${IMAGE_NAME}" \
+  .
 
 # ---------- cleanup ----------
 if docker ps -a --filter "name=^${CONTAINER_NAME}$" --format '{{"{{"}}.ID{{"}}"}}' | grep -q .; then
