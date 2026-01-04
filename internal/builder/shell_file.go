@@ -20,13 +20,16 @@ WORKDIR="{{ .WorkDir }}"
 
 PROJ_ROOT=""
 
+INTERCEPTOR_PATH=""
+
 usage() {
   cat <<EOF
-Usage: $0 --proj_root=PATH [options]
+Usage: $0 --proj_root=PATH --interceptor_path=PATH [options]
 
 Options:
-  --proj_root=PATH    Project root directory (required)
-  -h, --help          Show this help message
+  --proj_root=PATH        Project root directory (required)
+  --interceptor_path=PATH Interceptor full path
+  -h, --help              Show this help message
 EOF
 }
 
@@ -34,6 +37,9 @@ for arg in "$@"; do
   case "$arg" in
     --proj_root=*)
       PROJ_ROOT="${arg#*=}"
+      ;;
+    --interceptor_path=*)
+      INTERCEPTOR_PATH="${arg#*=}"
       ;;
     -h|--help)
       usage
@@ -56,6 +62,17 @@ fi
 
 if [[ ! -d "$PROJ_ROOT" ]]; then
   echo "ERROR: proj_root does not exist: $PROJ_ROOT"
+  exit 1
+fi
+
+if [[ -z "$INTERCEPTOR_PATH" ]]; then
+  echo "ERROR: --interceptor_path is required"
+  usage
+  exit 1
+fi
+
+if [[ ! -d "$INTERCEPTOR_PATH" ]]; then
+  echo "ERROR: interceptor_path does not exist: $INTERCEPTOR_PATH"
   exit 1
 fi
 
@@ -86,6 +103,7 @@ docker run --rm \
   --name "${CONTAINER_NAME}" \
   --network host \
   -v "${PROJ_ROOT}:${WORKDIR}" \
+  -v "${INTERCEPTOR_PATH}:${WORKDIR}/bin/$(basename "$INTERCEPTOR_PATH")"\
   "${IMAGE_NAME}"
 
 echo "==> Build finished."

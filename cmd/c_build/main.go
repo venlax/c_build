@@ -34,6 +34,8 @@ func main() {
 
 		case strings.HasPrefix(arg, "--output"):
 			fmt.Sscanf(arg, "--output=%s", &dstDirPath)
+		case strings.HasPrefix(arg, "--ld_preload"):
+			fmt.Sscanf(arg, "--ld_preload=%s", &config.HostInterceptorPath)
 		case strings.HasPrefix(arg, "--log_level"):
 			var tmp string
 			fmt.Sscanf(arg, "--log_level", &tmp)
@@ -50,6 +52,9 @@ func main() {
 		}
 	}
 
+	if config.HostInterceptorPath == "" {
+		panic(fmt.Errorf("Missing required argument: --ld_preload"))
+	}
 
 	InitLogger(logLevel)
 
@@ -77,6 +82,8 @@ func main() {
 	// ---- full build pipeline ----
 	slog.Info("init docker", "create", create)
 	docker.Init(create)
+
+	docker.Run([]string {"ls", "/ws/bin"}, os.Stdout)
 
 	slog.Info("init installer")
 	installer.Init()

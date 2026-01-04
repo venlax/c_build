@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"io"
 	"os"
+	"path/filepath"
 	"slices"
 
 	"github.com/docker/docker/api/types/container"
@@ -48,6 +49,7 @@ func Init(create bool) {
 		},&container.HostConfig {
 			Binds: []string{
 				config.HostBuildRootDir + ":" + config.WorkingDir,
+				config.HostInterceptorPath + ":" + config.WorkingDir + "/bin/" + filepath.Base(config.HostInterceptorPath),
 			},
 			NetworkMode: "host",
 		}, nil, nil, config.ContainerName)
