@@ -1,7 +1,7 @@
 package installer
 
 import (
-	"fmt"
+	"log/slog"
 	"strings"
 
 	"github.com/venlax/c_build/internal/config"
@@ -33,7 +33,7 @@ func Sha256File(path string) (string, error) {
 	err := docker.Run([]string {"sha256sum", path}, &sb)
 
 	if err != nil {
-		fmt.Println(sb.String())
+		slog.Error(sb.String())
 		return "", err
 	}
 

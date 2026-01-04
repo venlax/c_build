@@ -2,6 +2,7 @@ package config
 
 import (
 	"fmt"
+	"log/slog"
 	"strings"
 	"time"
 )
@@ -20,13 +21,13 @@ func Init(configPath string) {
 	Parse(configPath)
 
 	Image = strings.ReplaceAll(strings.ToLower(Cfg.MetaData.Distribution), " ", ":") // Not stable
-	fmt.Printf("Image: <%s>\n", Image)
+	slog.Info(fmt.Sprintf("Image: <%s>\n", Image))
 
-	fmt.Printf("PkgMgr: <%s>\n", PkgMgrName)
+	slog.Info(fmt.Sprintf("PkgMgr: <%s>\n", PkgMgrName))
 
 	HostBuildRootDir = Cfg.MetaData.BuildPath
 
-	fmt.Printf("Build root dir: <%s>\n", HostBuildRootDir)
+	slog.Info(fmt.Sprintf("Build root dir: <%s>\n", HostBuildRootDir))
 
 	// fmt.Println("Dependencies:")
 	for _, dep := range Cfg.Dependencies {
@@ -41,14 +42,14 @@ func Init(configPath string) {
 	}
 
     t, _ := time.Parse(time.RFC3339, Cfg.MetaData.BuildTimeStamp)
-	fmt.Printf("set SOURCE_DATE_EPOCH=%d\n", t.Unix())
+	slog.Info(fmt.Sprintf("set SOURCE_DATE_EPOCH=%d\n", t.Unix()))
 	Env = append(Env, fmt.Sprintf("SOURCE_DATE_EPOCH=%d", t.Unix()))
 
 	CFLAGS := fmt.Sprintf("CFLAGS=-ffile-prefix-map=%s=.",WorkingDir)
 	CXXFLAGS := fmt.Sprintf("CXXFLAGS=-ffile-prefix-map=%s=.", WorkingDir)
 
-	fmt.Printf("set %s\n", CFLAGS)
-	fmt.Printf("set %s\n", CXXFLAGS)
+	slog.Info(fmt.Sprintf("set %s\n", CFLAGS))
+	slog.Info(fmt.Sprintf("set %s\n", CXXFLAGS))
 
 	Env = append(Env, CFLAGS, CXXFLAGS)
 
@@ -56,8 +57,8 @@ func Init(configPath string) {
 
 	Env = append(Env, locales...)
 
-	fmt.Printf("set locale: %s\n", Cfg.MetaData.Locale)
+	slog.Info(fmt.Sprintf("set locale: %s\n", Cfg.MetaData.Locale))
 
-	fmt.Printf("Container Env: %v\n", Env)
+	slog.Info(fmt.Sprintf("Container Env: %v\n", Env))
 
 }

@@ -21,6 +21,7 @@ type MetaData struct {
 	HostName string `yaml:"hostname"`
 	Locale string	`yaml:"locale"`
 	Umask string	`yaml:"umask"`
+	RandomSeed string `yaml:"random_seed"` // TODO
 }
 
 type Dependency struct {

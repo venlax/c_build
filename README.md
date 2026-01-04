@@ -17,6 +17,7 @@ go run cmd/c_build/main [-/--args[=value]]
 |-d/--debug| false | 调试模式, 所有命令直接通过Go程序与容器交互, 不生成Dockerfile, 仅用于调试|
 |--input| true| $value为yaml配置文件路径|
 |--output| true| $value为Dockerfile/build.sh目录路径,默认为`./build`|
+|--log_level|true|$value为日志级别, 可选值为debug, info, error,默认为info|
 
 ### Result
 - Dockerfile
@@ -27,8 +28,8 @@ go run cmd/c_build/main [-/--args[=value]]
 # pre install docker in the build host
 
 sudo chmod +x build.sh
-# TODO
-./build.sh
+
+./build.sh --proj_root=XXX
 ```
 
 ## Note   

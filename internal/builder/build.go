@@ -3,6 +3,7 @@ package builder
 import (
 	// "fmt"
 	"fmt"
+	"log/slog"
 	"os"
 
 	"github.com/venlax/c_build/internal/config"
@@ -50,8 +51,9 @@ func Check()  {
 			panic(err)
 		}
 		if sha256sum != artifact.Hash {
-			panic(fmt.Errorf("build result [%s] hash [%s] not match the artifact hash [%s]", artifact.Path, sha256sum[:8], artifact.Hash[:8]))			
+			slog.Error(fmt.Sprintf("build result [%s] hash [%s] not match the artifact hash [%s]", artifact.Path, sha256sum[:8], artifact.Hash[:8]))			
+			os.Exit(1)
 		}
-		fmt.Printf("[OK]: %s=%s\n", artifact.Path, sha256sum[:8])
+		slog.Info(fmt.Sprintf("[OK]: %s=%s\n", artifact.Path, sha256sum[:8]))
 	}
 }
