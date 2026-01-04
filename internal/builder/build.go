@@ -54,6 +54,6 @@ func Check()  {
 			slog.Error(fmt.Sprintf("build result [%s] hash [%s] not match the artifact hash [%s]", artifact.Path, sha256sum[:8], artifact.Hash[:8]))			
 			os.Exit(1)
 		}
-		slog.Info(fmt.Sprintf("[OK]: %s=%s\n", artifact.Path, sha256sum[:8]))
+		slog.Info(fmt.Sprintf("[OK]: %s=%s", artifact.Path, sha256sum[:8]))
 	}
 }

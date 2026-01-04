@@ -71,6 +71,6 @@ func genDockerfileData() DockerfileTmplData {
 	data.WorkDir = config.WorkingDir
 	data.Env = config.Env
 	data.InstallCmds = installer.InstallStrs()
-	data.BuildCmd = fmt.Sprintf("umask %s && make", config.Cfg.MetaData.Umask)
+	data.BuildCmd = fmt.Sprintf("make clean && umask %s && make", config.Cfg.MetaData.Umask)
 	return data
 }

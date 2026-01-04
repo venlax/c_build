@@ -8,7 +8,7 @@
 docker stop $containerName
 docker rm $containerName
 # main
-go run cmd/c_build/main [-/--args[=value]]
+go run cmd/c_build/*.go [-/--args[=value]]
 ```  
   
 |Args     | HasValue($value) | Explain|  
