@@ -39,7 +39,7 @@ type DockerfileTmplData struct {
 
 func RenderDockerfile(dstDir string) {
 	tmpl, err := template.New("").Funcs(template.FuncMap{
-    	"join": strings.Join,
+		"join": strings.Join,
 	}).Parse(dockerfileTmpl)
 	if err != nil {
 		panic(err)
@@ -51,7 +51,7 @@ func RenderDockerfile(dstDir string) {
 	defer f.Close()
 
 	var buf bytes.Buffer
-	
+
 	err = tmpl.Execute(&buf, genDockerfileData())
 
 	if err != nil {
@@ -63,7 +63,7 @@ func RenderDockerfile(dstDir string) {
 	if err != nil {
 		panic(err)
 	}
-} 
+}
 
 func genDockerfileData() DockerfileTmplData {
 	var data DockerfileTmplData
@@ -71,6 +71,6 @@ func genDockerfileData() DockerfileTmplData {
 	data.WorkDir = config.WorkingDir
 	data.Env = config.Env
 	data.InstallCmds = installer.InstallStrs()
-	data.BuildCmd = fmt.Sprintf("make clean && umask %s && make", config.Cfg.MetaData.Umask)
+	data.BuildCmd = fmt.Sprintf("make clean && umask %s && env LD_PRELOAD=%s/libreprobuild_interceptor.so make", config.Cfg.MetaData.Umask, config.LibReprobuildDir)
 	return data
 }

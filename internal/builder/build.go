@@ -28,7 +28,7 @@ func Build() {
 		panic(err)
 	}
 
-	MakeCommand := fmt.Sprintf("umask %s && make", config.Cfg.MetaData.Umask)
+	MakeCommand := fmt.Sprintf("umask %s && env LD_PRELOAD=%s/libreprobuild_interceptor.so make", config.Cfg.MetaData.Umask, config.LibReprobuildDir)
 
 	err = docker.Run([]string{"sh", "-c", MakeCommand}, os.Stdout)
 	if err != nil {
@@ -44,14 +44,14 @@ func Build() {
 
 }
 
-func Check()  {
+func Check() {
 	for _, artifact := range config.Cfg.Artifacts {
 		sha256sum, err := installer.Sha256File(config.WorkingDir + "/" + artifact.Path)
 		if err != nil {
 			panic(err)
 		}
 		if sha256sum != artifact.Hash {
-			slog.Error(fmt.Sprintf("build result [%s] hash [%s] not match the artifact hash [%s]", artifact.Path, sha256sum[:8], artifact.Hash[:8]))			
+			slog.Error(fmt.Sprintf("build result [%s] hash [%s] not match the artifact hash [%s]", artifact.Path, sha256sum[:8], artifact.Hash[:8]))
 			os.Exit(1)
 		}
 		slog.Info(fmt.Sprintf("[OK]: %s=%s", artifact.Path, sha256sum[:8]))

@@ -18,6 +18,7 @@ go run cmd/c_build/*.go [-/--args[=value]]
 |--input| true| $value为yaml配置文件路径|
 |--output| true| $value为Dockerfile/build.sh目录路径,默认为`./build`|
 |--log_level|true|$value为日志级别, 可选值为debug, info, error,默认为info|
+|--ld_preload|true|$value为reprobuild在宿主机的路径, 目前只需要保证该目录下有c_build所需的动态链接库即可|
 
 ### Result
 - Dockerfile

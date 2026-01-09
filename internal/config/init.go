@@ -3,7 +3,6 @@ package config
 import (
 	"fmt"
 	"log/slog"
-	"path/filepath"
 	"strings"
 	"time"
 )
@@ -42,22 +41,22 @@ func Init(configPath string) {
 		// fmt.Printf("%+v\n", lib)
 	}
 
-	LD_PRELOAD := fmt.Sprintf("LD_PRELOAD=%s/bin/%s", WorkingDir, filepath.Base(HostInterceptorPath))
+	LD_PRELOAD := fmt.Sprintf("LD_PRELOAD=%s/libreprobuild_interceptor.so", LibReprobuildDir)
 	slog.Info(fmt.Sprintf("set LD_PRELOAD=%s", LD_PRELOAD))
-	Env = append(Env, LD_PRELOAD)
+	// Env = append(Env, LD_PRELOAD)
 
-    t, _ := time.Parse(time.RFC3339, Cfg.MetaData.BuildTimeStamp)
+	t, _ := time.Parse(time.RFC3339, Cfg.MetaData.BuildTimeStamp)
 	slog.Info(fmt.Sprintf("set SOURCE_DATE_EPOCH=%d", t.Unix()))
 	Env = append(Env, fmt.Sprintf("SOURCE_DATE_EPOCH=%d", t.Unix()))
 
 	CFLAGS := fmt.Sprintf("CFLAGS=\"-ffile-prefix-map=%s=. -frandom-seed=%s\"",WorkingDir, Cfg.MetaData.RandomSeed)
 	CXXFLAGS := fmt.Sprintf("CXXFLAGS=\"-ffile-prefix-map=%s=. -frandom-seed=%s\"",WorkingDir, Cfg.MetaData.RandomSeed)
 	REPROBUILD_COMPILER_FLAGS := fmt.Sprintf("REPROBUILD_COMPILER_FLAGS=\"-ffile-prefix-map=%s=. -frandom-seed=%s\"",WorkingDir, Cfg.MetaData.RandomSeed)
-	
+
 	slog.Info(fmt.Sprintf("set %s", CFLAGS))
 	slog.Info(fmt.Sprintf("set %s", CXXFLAGS))
 	slog.Info(fmt.Sprintf("set %s", REPROBUILD_COMPILER_FLAGS))
-	
+
 	Env = append(Env, CFLAGS, CXXFLAGS, REPROBUILD_COMPILER_FLAGS)
 
 	locales := strings.Split(Cfg.MetaData.Locale, ";")

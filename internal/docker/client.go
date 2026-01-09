@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"io"
 	"os"
-	"path/filepath"
 	"slices"
 
 	"github.com/docker/docker/api/types/container"
@@ -49,7 +48,7 @@ func Init(create bool) {
 		},&container.HostConfig {
 			Binds: []string{
 				config.HostBuildRootDir + ":" + config.WorkingDir,
-				config.HostInterceptorPath + ":" + config.WorkingDir + "/bin/" + filepath.Base(config.HostInterceptorPath),
+				config.HostReprobuildDir + ":" + config.LibReprobuildDir,
 			},
 			NetworkMode: "host",
 		}, nil, nil, config.ContainerName)
@@ -106,7 +105,7 @@ func Run(command []string, writer io.Writer) error {
 	}
 
 	defer hijacked_resp.Close()
-	
+
 	// _, err = io.Copy(os.Stdout, hijacked_resp.Reader)
 	// _, err = io.Copy(writer, hijacked_resp.Reader)
 	_, err = stdcopy.StdCopy(writer, os.Stderr, hijacked_resp.Reader)
@@ -125,7 +124,7 @@ func Run(command []string, writer io.Writer) error {
 	}
 
 	return nil
-}	
+}
 
 
 // func containerExist(name string) bool {

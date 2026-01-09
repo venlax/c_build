@@ -8,6 +8,8 @@ var ContainerName string = "unspecified" // container already exists just reuse 
 
 var WorkingDir = "/ws"
 
+var LibReprobuildDir = "/opt/libreprobuild"
+
 var Env []string = []string {
 	// "http_proxy=http://127.0.0.1:7890",
 	// "https_proxy=http://127.0.0.1:7890",

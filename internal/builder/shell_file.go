@@ -20,15 +20,17 @@ WORKDIR="{{ .WorkDir }}"
 
 PROJ_ROOT=""
 
-INTERCEPTOR_PATH=""
+LIB_REPROBUILD_DIR="{{ .LibReprobuildDir }}"
+
+REPROBUILD_PATH=""
 
 usage() {
   cat <<EOF
-Usage: $0 --proj_root=PATH --interceptor_path=PATH [options]
+Usage: $0 --proj_root=PATH --reprobuild_path=PATH [options]
 
 Options:
   --proj_root=PATH        Project root directory (required)
-  --interceptor_path=PATH Interceptor full path
+  --reprobuild_path=PATH  Reprobuild full path
   -h, --help              Show this help message
 EOF
 }
@@ -38,8 +40,8 @@ for arg in "$@"; do
     --proj_root=*)
       PROJ_ROOT="${arg#*=}"
       ;;
-    --interceptor_path=*)
-      INTERCEPTOR_PATH="${arg#*=}"
+    --reprobuild_path=*)
+      REPROBUILD_PATH="${arg#*=}"
       ;;
     -h|--help)
       usage
@@ -65,14 +67,14 @@ if [[ ! -d "$PROJ_ROOT" ]]; then
   exit 1
 fi
 
-if [[ -z "$INTERCEPTOR_PATH" ]]; then
-  echo "ERROR: --interceptor_path is required"
+if [[ -z "$REPROBUILD_PATH" ]]; then
+  echo "ERROR: --reprobuild_path is required"
   usage
   exit 1
 fi
 
-if [[ ! -d "$INTERCEPTOR_PATH" ]]; then
-  echo "ERROR: interceptor_path does not exist: $INTERCEPTOR_PATH"
+if [[ ! -d "$REPROBUILD_PATH" ]]; then
+  echo "ERROR: reprobuild_path does not exist: $REPROBUILD_PATH"
   exit 1
 fi
 
@@ -103,7 +105,7 @@ docker run --rm \
   --name "${CONTAINER_NAME}" \
   --network host \
   -v "${PROJ_ROOT}:${WORKDIR}" \
-  -v "${INTERCEPTOR_PATH}:${WORKDIR}/bin/$(basename "$INTERCEPTOR_PATH")"\
+  -v "${REPROBUILD_PATH}:${LIB_REPROBUILD_DIR}"\
   "${IMAGE_NAME}"
 
 echo "==> Build finished."
@@ -114,6 +116,7 @@ type ShellfileTmplData struct {
 	Image string
 	ContainerName string
 	WorkDir string
+  LibReprobuildDir string
 }
 
 
@@ -148,5 +151,6 @@ func genShellfileData() ShellfileTmplData {
 	data.Image = config.Image
 	data.WorkDir = config.WorkingDir
 	data.ContainerName = config.ContainerName
+  data.LibReprobuildDir = config.LibReprobuildDir
 	return data
 }

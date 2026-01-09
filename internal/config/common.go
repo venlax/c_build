@@ -5,4 +5,4 @@ var PkgMgrName = ""
 
 var HostBuildRootDir = ""
 
-var HostInterceptorPath = ""
+var HostReprobuildDir = ""

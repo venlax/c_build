@@ -35,7 +35,7 @@ func main() {
 		case strings.HasPrefix(arg, "--output"):
 			fmt.Sscanf(arg, "--output=%s", &dstDirPath)
 		case strings.HasPrefix(arg, "--ld_preload"):
-			fmt.Sscanf(arg, "--ld_preload=%s", &config.HostInterceptorPath)
+			fmt.Sscanf(arg, "--ld_preload=%s", &config.HostReprobuildDir)
 		case strings.HasPrefix(arg, "--log_level"):
 			var tmp string
 			fmt.Sscanf(arg, "--log_level", &tmp)
@@ -52,7 +52,7 @@ func main() {
 		}
 	}
 
-	if config.HostInterceptorPath == "" {
+	if config.HostReprobuildDir == "" {
 		panic(fmt.Errorf("Missing required argument: --ld_preload"))
 	}
 
@@ -99,7 +99,7 @@ func main() {
 
 	slog.Info("build finished successfully")
 }
-																																														
+
 // import (
 // 	"context"
 // 	"fmt"
@@ -107,7 +107,7 @@ func main() {
 // 	"github.com/docker/docker/api/types/container"
 // 	"github.com/docker/docker/client"
 // )
-        
+
 // func main()  {
 //     // 创建 Docker 客户端
 // 	cli, err := client.NewClientWithOpts(client.FromEnv)
