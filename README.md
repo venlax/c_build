@@ -19,7 +19,7 @@ go run cmd/c_build/*.go [-/--args[=value]]
 |--output| true| $value为Dockerfile/build.sh目录路径,默认为`./build`|
 |--log_level|true|$value为日志级别, 可选值为debug, info, error,默认为info|
 |--ld_preload|true|$value为reprobuild在宿主机的路径, 目前只需要保证该目录下有c_build所需的动态链接库即可|
-
+|--build_cmd|true|$value为构建commands, 需要保证为合法shell cmd, 能通过 sh -c $value运行, 多个命令格式--build_cmd="cmd1 && cmd2...", 默认为make, 默认在项目根目录运行(metadata.build_path)|
 ### Result
 - Dockerfile
 - build.sh

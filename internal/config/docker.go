@@ -18,3 +18,5 @@ var Env []string = []string {
 	// "CFLAGS=-ffile-prefix-map=/ws=.",
 	// "CXXFLAGS=-ffile-prefix-map=/ws=.",
 }
+
+var BuildCmd string = "make"

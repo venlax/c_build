@@ -71,6 +71,8 @@ func genDockerfileData() DockerfileTmplData {
 	data.WorkDir = config.WorkingDir
 	data.Env = config.Env
 	data.InstallCmds = installer.InstallStrs()
-	data.BuildCmd = fmt.Sprintf("make clean && umask %s && env LD_PRELOAD=%s/libreprobuild_interceptor.so make", config.Cfg.MetaData.Umask, config.LibReprobuildDir)
+	ld_path := fmt.Sprintf("env LD_PRELOAD=%s/libreprobuild_interceptor.so", config.LibReprobuildDir)
+	BuildCommand := fmt.Sprintf("umask %s && %s", config.Cfg.MetaData.Umask, config.BuildCmd)
+	data.BuildCmd = "make clean && " + strings.ReplaceAll(BuildCommand, "&&", "&& " + ld_path)
 	return data
 }

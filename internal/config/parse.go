@@ -3,6 +3,8 @@ package config
 import (
 	// "fmt"
 	"os"
+	"regexp"
+	"strings"
 
 	"gopkg.in/yaml.v3"
 )
@@ -40,6 +42,8 @@ type Artifact struct {
 
 var Cfg Config
 
+var versionRe = regexp.MustCompile(`\b\d+(?:\.\d+)*\b`)
+
 func Parse(path string) {
 	data, err := os.ReadFile(path)
 	if err != nil {
@@ -49,6 +53,26 @@ func Parse(path string) {
 	if err := yaml.Unmarshal(data, &Cfg); err != nil {
 		panic(err)
 	}
+	
+	lower := strings.ToLower(Cfg.MetaData.Distribution)
+
+	for _, d := range distros {
+		if strings.HasPrefix(lower, d) {
+			ver := versionRe.FindString(lower)
+			if ver == "" {
+				panic("the distribution version tag is empty.")
+			}
+			if d == "ubuntu" {
+				parts := strings.Split(ver, ".")
+				if len(parts) >= 2 {
+					ver = parts[0] + "." + parts[1]
+				}
+			}
+			Cfg.MetaData.Distribution = d + ":" + ver
+			break
+		}
+	}
+
 
 	// fmt.Println(Cfg)
 }

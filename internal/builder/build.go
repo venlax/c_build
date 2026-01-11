@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"log/slog"
 	"os"
+	"strings"
 
 	"github.com/venlax/c_build/internal/config"
 	"github.com/venlax/c_build/internal/docker"
@@ -28,7 +29,14 @@ func Build() {
 		panic(err)
 	}
 
-	MakeCommand := fmt.Sprintf("umask %s && env LD_PRELOAD=%s/libreprobuild_interceptor.so make", config.Cfg.MetaData.Umask, config.LibReprobuildDir)
+
+	ld_path := fmt.Sprintf("env LD_PRELOAD=%s/libreprobuild_interceptor.so", config.LibReprobuildDir)
+
+	MakeCommand := fmt.Sprintf("umask %s && %s", config.Cfg.MetaData.Umask, config.BuildCmd)
+
+	MakeCommand = strings.ReplaceAll(MakeCommand, "&&", "&& " + ld_path)
+
+	fmt.Println(MakeCommand)
 
 	err = docker.Run([]string{"sh", "-c", MakeCommand}, os.Stdout)
 	if err != nil {

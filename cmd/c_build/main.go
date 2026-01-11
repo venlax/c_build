@@ -36,6 +36,8 @@ func main() {
 			fmt.Sscanf(arg, "--output=%s", &dstDirPath)
 		case strings.HasPrefix(arg, "--ld_preload"):
 			fmt.Sscanf(arg, "--ld_preload=%s", &config.HostReprobuildDir)
+		case strings.HasPrefix(arg, "--build_cmd"):
+			config.BuildCmd = strings.TrimLeft(arg, "--build_cmd=")
 		case strings.HasPrefix(arg, "--log_level"):
 			var tmp string
 			fmt.Sscanf(arg, "--log_level", &tmp)
