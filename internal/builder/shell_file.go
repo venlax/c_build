@@ -90,7 +90,7 @@ echo "==> Building image ${IMAGE_NAME}"
 docker build \
   --network host \
   --pull \
-  -t "${IMAGE_NAME}" \
+  -t reprobuild \
   .
 
 # ---------- cleanup ----------
@@ -106,7 +106,7 @@ docker run --rm \
   --network host \
   -v "${PROJ_ROOT}:${WORKDIR}" \
   -v "${REPROBUILD_PATH}:${LIB_REPROBUILD_DIR}"\
-  "${IMAGE_NAME}"
+  reprobuild
 
 echo "==> Build finished."
 
@@ -120,7 +120,7 @@ type ShellfileTmplData struct {
 }
 
 
-func RenderShellfile(dstDir string) {
+func RenderShellfile(dstDir string, digest string) {
 	tmpl, err := template.New("").Parse(shellFileTmpl)
 	if err != nil {
 		panic(err)
@@ -133,7 +133,7 @@ func RenderShellfile(dstDir string) {
 
 	var buf bytes.Buffer
 	
-	err = tmpl.Execute(&buf, genShellfileData())
+	err = tmpl.Execute(&buf, genShellfileData(digest))
 
 	if err != nil {
 		panic(err)
@@ -146,9 +146,9 @@ func RenderShellfile(dstDir string) {
 	}
 }
 
-func genShellfileData() ShellfileTmplData {
+func genShellfileData(digest string) ShellfileTmplData {
 	var data ShellfileTmplData
-	data.Image = config.Image
+	data.Image = digest
 	data.WorkDir = config.WorkingDir
 	data.ContainerName = config.ContainerName
   data.LibReprobuildDir = config.LibReprobuildDir

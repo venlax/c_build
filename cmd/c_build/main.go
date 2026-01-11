@@ -74,8 +74,12 @@ func main() {
 	if !debug {
 		slog.Info("render only mode", "output", dstDirPath)
 
-		builder.RenderDockerfile(dstDirPath)
-		builder.RenderShellfile(dstDirPath)
+		digest := builder.GetDigestWithCheck(dstDirPath, configPath)
+
+		slog.Info("LOCK digest", "digest", digest)
+
+		builder.RenderDockerfile(dstDirPath, digest)
+		builder.RenderShellfile(dstDirPath, digest)
 
 		slog.Info("render finished")
 		return
@@ -100,6 +104,9 @@ func main() {
 	builder.Check()
 
 	slog.Info("build finished successfully")
+	
+	builder.RenderDigestFile(dstDirPath, configPath)
+	slog.Info(fmt.Sprintf("LOCK distribution %s with digest %s and info write to %s/digest.yaml", config.Cfg.MetaData.Distribution, docker.GetImageInspect(config.Cfg.MetaData.Distribution).RepoDigests[0], dstDirPath))
 }
 
 // import (

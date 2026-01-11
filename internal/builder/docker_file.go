@@ -37,7 +37,7 @@ type DockerfileTmplData struct {
 	BuildCmd string
 }
 
-func RenderDockerfile(dstDir string) {
+func RenderDockerfile(dstDir string, digest string) {
 	tmpl, err := template.New("").Funcs(template.FuncMap{
 		"join": strings.Join,
 	}).Parse(dockerfileTmpl)
@@ -52,7 +52,7 @@ func RenderDockerfile(dstDir string) {
 
 	var buf bytes.Buffer
 
-	err = tmpl.Execute(&buf, genDockerfileData())
+	err = tmpl.Execute(&buf, genDockerfileData(digest))
 
 	if err != nil {
 		panic(err)
@@ -65,9 +65,9 @@ func RenderDockerfile(dstDir string) {
 	}
 }
 
-func genDockerfileData() DockerfileTmplData {
+func genDockerfileData(digest string) DockerfileTmplData {
 	var data DockerfileTmplData
-	data.Image = config.Image
+	data.Image = digest
 	data.WorkDir = config.WorkingDir
 	data.Env = config.Env
 	data.InstallCmds = installer.InstallStrs()

@@ -157,3 +157,11 @@ func getContainerInspect() container.InspectResponse {
 	}
 	return inspect
 }
+
+func GetImageInspect(imageID string) image.InspectResponse {
+	inspect, err := Cli.ImageInspect(context.Background(), imageID)
+	if err != nil {
+		panic(err)
+	}
+	return inspect
+}
