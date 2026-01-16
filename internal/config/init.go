@@ -8,7 +8,7 @@ import (
 )
 
 func Init(configPath string) {
-	PkgMgrName = "apt"
+	// PkgMgrName = "apt"
 	// Image = "ubuntu:22.04"
 	// Image = "gcc:13"
 	// Libs = append(Libs, LibInfo{

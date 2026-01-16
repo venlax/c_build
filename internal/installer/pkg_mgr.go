@@ -1,10 +1,12 @@
 package installer
 
 import (
+	"bytes"
 	"fmt"
 	"io"
 	"os"
 	"strings"
+	"text/template"
 
 	"github.com/venlax/c_build/internal/config"
 	"github.com/venlax/c_build/internal/docker"
@@ -25,15 +27,15 @@ type command struct {
 
 type pkgMgr struct{
 	name string
+	versionTmpl string
 	updateCommand command
-	installCommand command
-	getLibVersionCommand command
-	
+	installCommand command	
 }
 
 var pkgMgrs map[string]pkgMgr = map[string]pkgMgr {
 	"apt" : {
 		"apt", 
+		`{{.Name}}={{.Version}}`,
 		command {
 			[]string{"apt", "update"},
 			NoArgs,
@@ -41,25 +43,54 @@ var pkgMgrs map[string]pkgMgr = map[string]pkgMgr {
 		command {
 			[]string{"apt", "install", "-y", "--allow-downgrades"},
 			Tail,
-		},  
-		command {
-			[]string{},
-			NoArgs,
 		},
 	},
-	"dpkg" : {
-		"dpkg", 
+	"apk" : {
+		"apk",
+		`{{.Name}}={{.Version}}`,
 		command {
-			[]string{}, 
+			[]string{"apk", "update"},
 			NoArgs,
-		}, 
+		},
 		command {
-			[]string{}, 
+			[]string{"apk", "add", "-y"},
+			Tail,
+		},
+	},
+	"dnf" : {
+		"dnf",
+		`{{.Name}}-{{.Version}}`,
+		command {
+			[]string{"dnf", "makecache"},
 			NoArgs,
-		}, 
+		},
 		command {
-			[]string{"dpkg", "-s", "|", "grep", "^Version"},
-			Xargs,
+			[]string{"dnf", "install", "-y", "--allowerasing"},
+			Tail,
+		},
+	},
+	"yum" : {
+		"yum",
+		`{{.Name}}-{{.Version}}`,
+		command {
+			[]string{"yum", "makecache"},
+			NoArgs,
+		},
+		command {
+			[]string{"yum", "install", "-y"},
+			Tail,
+		},
+	},
+	"pacman": {
+		"pacman",
+		`{{.Name}}`,
+		command {
+			[]string{"pacman", "-Syu"},
+			NoArgs,
+		},
+		command {
+			[]string{"pacman", "-U", "--noconfirm"},
+			Tail,
 		},
 	},
 }
@@ -73,11 +104,20 @@ func (p *pkgMgr) runUpdate() {
 }
 
 func (p *pkgMgr) runInstall(libInfo config.LibInfo) {
+	tpl, err := template.New("lib_full_name").Parse(p.versionTmpl)
+	if err != nil {
+		panic(err)
+	}
 	var arg string
 	if libInfo.Version == "" {
 		arg = libInfo.Name
 	} else {
-		arg = libInfo.Name + "=" + libInfo.Version
+		var buf bytes.Buffer
+		err := tpl.Execute(&buf, libInfo)
+		if err != nil {
+			panic(err)
+		}
+		arg = buf.String()
 	}
 	runCommand(p.installCommand, []string{arg}, os.Stdout)
 	// argvs := make([]string, 0, len(p.installCommand.strs) + 1)
@@ -93,24 +133,33 @@ func (p *pkgMgr) runInstall(libInfo config.LibInfo) {
 
 func (p *pkgMgr) runInstallAll() {
 	tmp := make([]string, len(config.Libs))
+	tpl, err := template.New("lib_full_name").Parse(p.versionTmpl)
+	if err != nil {
+		panic(err)
+	}
 	for i, libInfo := range config.Libs {
 		var arg string
 		if libInfo.Version == "" {
 			arg = libInfo.Name
 		} else {
-			arg = libInfo.Name + "=" + libInfo.Version
+			var buf bytes.Buffer
+			err := tpl.Execute(&buf, libInfo)
+			if err != nil {
+				panic(err)
+			}
+			arg = buf.String()
 		}
 		tmp[i] = arg
 	} 
 	runCommand(p.installCommand, tmp, os.Stdout)
 } 
 
-func (p *pkgMgr) runGetLibVersion(libInfo config.LibInfo) string {
-	var sb strings.Builder 
-	runCommand(p.getLibVersionCommand, []string{libInfo.Name}, &sb)
-	versionRawStr := sb.String()
-	return strings.TrimSpace(strings.TrimPrefix(versionRawStr, "Version:"))
-}
+// func (p *pkgMgr) runGetLibVersion(libInfo config.LibInfo) string {
+// 	var sb strings.Builder 
+// 	runCommand(p.getLibVersionCommand, []string{libInfo.Name}, &sb)
+// 	versionRawStr := sb.String()
+// 	return strings.TrimSpace(strings.TrimPrefix(versionRawStr, "Version:"))
+// }
 
 func runCommand(c command, args []string, writer io.Writer) {
 	cmd := make([]string, 0)

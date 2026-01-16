@@ -9,12 +9,6 @@ import (
 )
 
 func Check(libInfo config.LibInfo) bool {
-	pkg_mgr := GetPkgMgr("dpkg")
-
-	if version := (&pkg_mgr).runGetLibVersion(libInfo); version != libInfo.Version {
-		return false;
-	}
-
 	if sha256sum, err := Sha256File(libInfo.Path); err == nil {
 		if sha256sum != libInfo.Sha256 {
 			return false;

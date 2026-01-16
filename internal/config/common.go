@@ -7,12 +7,17 @@ var HostBuildRootDir = ""
 
 var HostReprobuildDir = ""
 
-var distros = []string{
-	"ubuntu",
-	"debian",
-	"alpine",
-	"fedora",
-	"centos",
-	"rocky",
-	"arch",
+type DistributionInfo struct {
+	Name string
+	PkgMgrName string
+}
+
+var distros = []DistributionInfo{
+	{"ubuntu", "apt"},
+	{"debian", "apt"},
+	{"alpine", "apk"},
+	{"fedora", "dnf"},
+	{"centos", "yum"},
+	{"rocky",  "dnf"},
+	{"arch",   "pacman"},
 }

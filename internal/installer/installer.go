@@ -1,7 +1,9 @@
 package installer
 
 import (
+	"bytes"
 	"fmt"
+	"text/template"
 
 	"github.com/venlax/c_build/internal/config"
 )
@@ -36,12 +38,21 @@ func InstallStrs() []string {
 	pkgMgr := GetPkgMgr(config.PkgMgrName)
 	res = append(res, commandStr((&pkgMgr).updateCommand, []string{}))
 	tmp := make([]string, len(config.Libs))
+	tpl, err := template.New("lib_full_name").Parse(pkgMgr.versionTmpl)
+	if err != nil {
+		panic(err)
+	}
 	for i, libInfo := range config.Libs {
 		var arg string
 		if libInfo.Version == "" {
 			arg = libInfo.Name
 		} else {
-			arg = libInfo.Name + "=" + libInfo.Version
+			var buf bytes.Buffer
+			err := tpl.Execute(&buf, libInfo)
+			if err != nil {
+				panic(err)
+			}
+			arg = buf.String()
 		}
 		tmp[i] = arg
 	} 
