@@ -2,9 +2,11 @@ package builder
 
 import (
 	// "fmt"
+	"bufio"
 	"fmt"
 	"log/slog"
 	"os"
+	"path/filepath"
 	"strings"
 
 	"github.com/venlax/c_build/internal/config"
@@ -35,6 +37,21 @@ func Build() {
 		ld_path = fmt.Sprintf("env LD_PRELOAD=%s/libreprobuild_interceptor.so LD_LIBRARY_PATH=\"%s/deps:$LD_LIBRARY_PATH\"", config.ReprobuildDir, config.WorkingDir)
 	} else {
 		ld_path = fmt.Sprintf("env LD_PRELOAD=%s/libreprobuild_interceptor.so", config.ReprobuildDir)
+	}
+
+	if len(config.Cfg.GitCommitIDs) > 0 {
+		filePath := filepath.Join(config.HostReprobuildDir, "commits.txt")
+		file, err := os.Create(filePath)
+		if err != nil {
+			panic(err)
+		}
+		defer file.Close()
+		writer := bufio.NewWriter(file)
+		for _, commit := range config.Cfg.GitCommitIDs {
+			// 每行：Repo CommitID\n
+			fmt.Fprintf(writer, "%s %s\n", commit.Repo, commit.CommitID)
+		}
+		writer.Flush()
 	}
 
 	MakeCommand := fmt.Sprintf("umask %s && %s", config.Cfg.MetaData.Umask, config.BuildCmd)

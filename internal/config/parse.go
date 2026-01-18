@@ -13,6 +13,7 @@ type Config struct {
 	MetaData MetaData `yaml:"metadata"`
 	Dependencies []Dependency `yaml:"dependencies"`
 	Artifacts []Artifact `yaml:"artifacts"`
+	GitCommitIDs []GitCommitID `yaml:"git_commit_ids"`
 }
 
 type MetaData struct {
@@ -39,6 +40,11 @@ type Artifact struct {
 	Path string `yaml:"path"`
 	Hash string	`yaml:"hash"`
 	Type string	`yaml:"type"`
+}
+
+type GitCommitID struct {
+	Repo string `yaml:"repo"`
+	CommitID string `yaml:"commit_id"`
 }
 
 var Cfg Config

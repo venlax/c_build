@@ -98,6 +98,12 @@ if docker ps -a --filter "name=^${CONTAINER_NAME}$" --format '{{"{{"}}.ID{{"}}"}
   docker rm -f "${CONTAINER_NAME}"
 fi
 
+# ---------- write commit file ----------
+cat <<'EOF' > ${REPROBUILD_PATH}/commits.txt
+{{- range .CommitIDs }}
+{{ .Repo }} {{ .CommitID }}
+{{- end }}
+EOF
 
 # ---------- run ----------
 echo "==> Running build container ${CONTAINER_NAME}"
@@ -117,6 +123,7 @@ type ShellfileTmplData struct {
 	ContainerName string
 	WorkDir string
   ReprobuildDir string
+  CommitIDs []config.GitCommitID
 }
 
 
@@ -152,5 +159,6 @@ func genShellfileData(digest string) ShellfileTmplData {
 	data.WorkDir = config.WorkingDir
 	data.ContainerName = config.ContainerName
   data.ReprobuildDir = config.ReprobuildDir
+  data.CommitIDs = config.Cfg.GitCommitIDs
 	return data
 }

@@ -71,6 +71,12 @@ func Init(configPath string) {
 
 	slog.Info(fmt.Sprintf("set locale: %s", Cfg.MetaData.Locale))
 
+	if len(Cfg.GitCommitIDs) > 0 {
+		REPROBUILD_LOG_GIT_CLONESG := fmt.Sprintf("REPROBUILD_LOG_GIT_CLONESG=%s/commits.txt", ReprobuildDir)
+		slog.Info(fmt.Sprintf("set %s", REPROBUILD_LOG_GIT_CLONESG))
+		Env = append(Env, REPROBUILD_LOG_GIT_CLONESG)
+	}
+
 	slog.Info(fmt.Sprintf("Container Env: %v", Env))
 
 }
