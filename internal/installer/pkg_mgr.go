@@ -138,6 +138,9 @@ func (p *pkgMgr) runInstallAll() {
 		panic(err)
 	}
 	for i, libInfo := range config.Libs {
+		if libInfo.Origin == "custom" {
+			continue
+		}
 		var arg string
 		if libInfo.Version == "" {
 			arg = libInfo.Name

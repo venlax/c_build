@@ -36,14 +36,20 @@ func Init(configPath string) {
 			Path: dep.Path,
 			Version: dep.Version,
 			Sha256: dep.Hash,
+			Origin: dep.Origin,
 		}
+		HasCustom = lib.Origin == "custom"
 		Libs = append(Libs, lib)
 		// fmt.Printf("%+v\n", lib)
 	}
 
-	LD_PRELOAD := fmt.Sprintf("LD_PRELOAD=%s/libreprobuild_interceptor.so", LibReprobuildDir)
-	slog.Info(fmt.Sprintf("set LD_PRELOAD=%s", LD_PRELOAD))
+	LD_PRELOAD := fmt.Sprintf("LD_PRELOAD=%s/libreprobuild_interceptor.so", ReprobuildDir)
+	slog.Info(fmt.Sprintf("set %s", LD_PRELOAD))
 	// Env = append(Env, LD_PRELOAD)
+	if HasCustom {
+		LD_LIBRARY_PATH := fmt.Sprintf("LD_LIBRARY_PATH=%s/deps:$LD_LIBRARY_PATH", WorkingDir)
+		slog.Info(fmt.Sprintf("set %s", LD_LIBRARY_PATH))
+	}
 
 	t, _ := time.Parse(time.RFC3339, Cfg.MetaData.BuildTimeStamp)
 	slog.Info(fmt.Sprintf("set SOURCE_DATE_EPOCH=%d", t.Unix()))
@@ -59,7 +65,7 @@ func Init(configPath string) {
 
 	Env = append(Env, CFLAGS, CXXFLAGS, REPROBUILD_COMPILER_FLAGS)
 
-	locales := strings.Split(Cfg.MetaData.Locale, ";")
+	locales := strings.Split(Cfg.MetaData.Locale, "\n")
 
 	Env = append(Env, locales...)
 

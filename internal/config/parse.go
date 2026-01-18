@@ -30,7 +30,8 @@ type Dependency struct {
 	Name string `yaml:"name"`
 	Path string `yaml:"path"`
 	Version string `yaml:"version"`
-	Hash string `yaml:"hash"`	
+	Hash string `yaml:"hash"`
+	Origin string `yaml:"origin"`	
 }
 
 

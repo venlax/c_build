@@ -12,9 +12,12 @@ type LibInfo struct {
 	Sha256 string
 	Path string
 	Type LibType
+	Origin string 
 }
 
 var Libs []LibInfo
+
+var HasCustom bool = false
 
 
 

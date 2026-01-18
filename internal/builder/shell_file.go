@@ -20,7 +20,7 @@ WORKDIR="{{ .WorkDir }}"
 
 PROJ_ROOT=""
 
-LIB_REPROBUILD_DIR="{{ .LibReprobuildDir }}"
+REPROBUILD_DIR="{{ .ReprobuildDir }}"
 
 REPROBUILD_PATH=""
 
@@ -105,7 +105,7 @@ docker run --rm \
   --name "${CONTAINER_NAME}" \
   --network host \
   -v "${PROJ_ROOT}:${WORKDIR}" \
-  -v "${REPROBUILD_PATH}:${LIB_REPROBUILD_DIR}"\
+  -v "${REPROBUILD_PATH}:${REPROBUILD_DIR}"\
   reprobuild
 
 echo "==> Build finished."
@@ -116,7 +116,7 @@ type ShellfileTmplData struct {
 	Image string
 	ContainerName string
 	WorkDir string
-  LibReprobuildDir string
+  ReprobuildDir string
 }
 
 
@@ -151,6 +151,6 @@ func genShellfileData(digest string) ShellfileTmplData {
 	data.Image = digest
 	data.WorkDir = config.WorkingDir
 	data.ContainerName = config.ContainerName
-  data.LibReprobuildDir = config.LibReprobuildDir
+  data.ReprobuildDir = config.ReprobuildDir
 	return data
 }

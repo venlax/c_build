@@ -48,7 +48,7 @@ func Init(create bool) {
 		},&container.HostConfig {
 			Binds: []string{
 				config.HostBuildRootDir + ":" + config.WorkingDir,
-				config.HostReprobuildDir + ":" + config.LibReprobuildDir,
+				config.HostReprobuildDir + ":" + config.ReprobuildDir,
 			},
 			NetworkMode: "host",
 		}, nil, nil, config.ContainerName)
