@@ -19,6 +19,7 @@ type Config struct {
 type MetaData struct {
 	Architecture string `yaml:"architecture"`
 	Distribution string `yaml:"distribution"`
+	BuildCmd string `yaml:"build_cmd"`
 	BuildPath string `yaml:"build_path"`
 	BuildTimeStamp string `yaml:"build_timestamp"`
 	HostName string `yaml:"hostname"`

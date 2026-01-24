@@ -29,6 +29,12 @@ func Init(configPath string) {
 
 	slog.Info(fmt.Sprintf("Build root dir: <%s>", HostBuildRootDir))
 
+	if len(Cfg.MetaData.BuildCmd) > 0 {
+		BuildCmd = Cfg.MetaData.BuildCmd
+	}
+
+	slog.Info(fmt.Sprintf("Build command: <%s>", BuildCmd))
+
 	// fmt.Println("Dependencies:")
 	for _, dep := range Cfg.Dependencies {
 		lib := LibInfo{
