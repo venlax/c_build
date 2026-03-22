@@ -93,6 +93,7 @@ func Build() {
 	Reprobuild := config.ReprobuildDir + "/build/reprobuild"
 
 	if exist, err := docker.FileExists(Reprobuild); (!exist) || err != nil {
+		installer.Install(config.ReproBuildLibs, false)
 		docker.Run([]string{"make", "-C", config.ReprobuildDir}, os.Stdout)
 	} 
 

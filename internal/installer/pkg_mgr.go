@@ -131,13 +131,14 @@ func (p *pkgMgr) RunInstall(libInfo config.LibInfo) {
 	// go to checker please
 } 
 
-func (p *pkgMgr) runInstallAll() {
-	tmp := make([]string, len(config.Libs))
+func (p *pkgMgr) runInstallAll(libs []config.LibInfo) {
+	tmp := make([]string, len(libs))
+	noVersionSpecified := make([]string, 0)
 	tpl, err := template.New("lib_full_name").Parse(p.versionTmpl)
 	if err != nil {
 		panic(err)
 	}
-	for i, libInfo := range config.Libs {
+	for i, libInfo := range libs {
 		if libInfo.Origin == "custom" {
 			continue
 		}
@@ -145,6 +146,10 @@ func (p *pkgMgr) runInstallAll() {
 		if libInfo.Version == "" {
 			arg = libInfo.Name
 		} else {
+			if libInfo.Name == "linux-libc-dev" {
+				noVersionSpecified = append(noVersionSpecified, libInfo.Name)
+				continue
+			}
 			var buf bytes.Buffer
 			err := tpl.Execute(&buf, libInfo)
 			if err != nil {
@@ -155,6 +160,9 @@ func (p *pkgMgr) runInstallAll() {
 		tmp[i] = arg
 	} 
 	runCommand(p.installCommand, tmp, os.Stdout)
+	if len(noVersionSpecified) > 0 {
+		runCommand(p.installCommand, noVersionSpecified, os.Stdout)
+	}
 } 
 
 // func (p *pkgMgr) runGetLibVersion(libInfo config.LibInfo) string {

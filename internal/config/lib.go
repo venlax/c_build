@@ -16,6 +16,15 @@ type LibInfo struct {
 }
 
 var Libs []LibInfo
+var ReproBuildLibs []LibInfo = []LibInfo {
+	{Name: "build-essential"},
+	{Name: "cmake"},
+	{Name: "libgtest-dev"},
+	{Name: "libyaml-cpp-dev"},
+	{Name: "libssl-dev"},
+	{Name: "python3"},
+
+}
 
 var HasCustom bool = false
 

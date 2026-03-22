@@ -18,7 +18,7 @@ type DigestFileData struct {
 
 func RenderDigestFile(dstDir string, configPath string) {
 	var data DigestFileData
-	image := docker.GetImageInspect(config.Cfg.MetaData.Distribution)
+	image := docker.GetImageInspect(config.ImageTag)
 	data.Digest = image.RepoDigests[0]
 	tmp, err := os.ReadFile(configPath)
 	if err != nil {

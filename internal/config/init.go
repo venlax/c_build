@@ -20,7 +20,7 @@ func Init(configPath string) {
 
 	Parse(configPath)
 
-	Image = strings.ReplaceAll(strings.ToLower(Cfg.MetaData.Distribution), " ", ":") // Not stable
+	Image = strings.ToLower(Cfg.MetaData.Distribution) // Not stable
 	slog.Info(fmt.Sprintf("Image: <%s>", Image))
 
 	slog.Info(fmt.Sprintf("PkgMgr: <%s>", PkgMgrName))

@@ -64,24 +64,17 @@ func Parse(path string) {
 	
 	lower := strings.ToLower(Cfg.MetaData.Distribution)
 
-	for _, d := range distros {
+	for _, d := range Distros {
 		if strings.HasPrefix(lower, d.Name) {
 			ver := versionRe.FindString(lower)
 			if ver == "" {
 				panic("the distribution version tag is empty.")
-			}
-			if d.Name == "ubuntu" {
-				parts := strings.Split(ver, ".")
-				if len(parts) >= 2 {
-					ver = parts[0] + "." + parts[1]
-				}
 			}
 			Cfg.MetaData.Distribution = d.Name + ":" + ver
 			PkgMgrName = d.PkgMgrName
 			break
 		}
 	}
-
 
 	// fmt.Println(Cfg)
 }

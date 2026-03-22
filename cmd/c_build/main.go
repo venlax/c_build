@@ -93,7 +93,7 @@ func main() {
 	installer.Init()
 
 	slog.Info("install dependencies")
-	installer.Install()
+	installer.Install(config.Libs, true)
 
 	slog.Info("start build")
 	builder.Build()
@@ -104,7 +104,7 @@ func main() {
 	slog.Info("build finished successfully")
 	
 	builder.RenderDigestFile(dstDirPath, configPath)
-	slog.Info(fmt.Sprintf("LOCK distribution %s with digest %s and info write to %s/digest.yaml", config.Cfg.MetaData.Distribution, docker.GetImageInspect(config.Cfg.MetaData.Distribution).RepoDigests[0], dstDirPath))
+	slog.Info(fmt.Sprintf("LOCK distribution %s with digest %s and info write to %s/digest.yaml", config.Cfg.MetaData.Distribution, docker.GetImageInspect(config.ImageTag).RepoDigests[0], dstDirPath))
 }
 
 // import (

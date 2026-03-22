@@ -4,8 +4,10 @@ import (
 	"context"
 	"fmt"
 	"io"
+	"log/slog"
 	"os"
 	"slices"
+	"strings"
 
 	"github.com/docker/docker/api/types/container"
 	"github.com/docker/docker/api/types/image"
@@ -25,7 +27,12 @@ func Init(create bool) {
 		panic(err)
 	}
 
-	readCloser, err := Cli.ImagePull(ctx, config.Image, image.PullOptions{})
+	nameAndVer := strings.Split(config.Image, ":")
+	config.ImageTag = nameAndVer[0] + ":" + GetTheOptimalImageTag(nameAndVer[1]) 
+
+	slog.Info("choose image tag", "imageTag", config.ImageTag)
+
+	readCloser, err := Cli.ImagePull(ctx, config.ImageTag, image.PullOptions{})
 
 	if err != nil {
 		panic(err)
@@ -41,7 +48,7 @@ func Init(create bool) {
 
 	if create {
 		resp, err := Cli.ContainerCreate(ctx, &container.Config{
-			Image: config.Image,
+			Image: config.ImageTag,
 			Cmd: []string{"tail", "-f", "/dev/null"},
 			WorkingDir: config.WorkingDir,
 			Env: config.Env,
