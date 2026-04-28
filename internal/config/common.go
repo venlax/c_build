@@ -1,6 +1,9 @@
 package config
 
-import "strings"
+import (
+	"strings"
+	"time"
+)
 
 
 var PkgMgrName = ""
@@ -112,6 +115,9 @@ var Distros = []DistributionInfo {
 		Versions: []VersionInfo {},
 	},
 }
+
+var EnableTimer bool
+var BuildTime time.Duration
 
 func GetDistroInfo(distroName string) *DistributionInfo {
 	for idx := range Distros {

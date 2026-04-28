@@ -5,6 +5,7 @@ import (
 	"log/slog"
 	"os"
 	"strings"
+	"time"
 
 	"github.com/venlax/c_build/internal/builder"
 	"github.com/venlax/c_build/internal/config"
@@ -49,6 +50,12 @@ func main() {
 			default:
 				panic(fmt.Errorf("Unknown value [%s] for log_level.",tmp))
 			}
+		case strings.HasPrefix(arg, "--enable_timer"):
+			var tmp string
+			fmt.Sscanf(arg, "--enable_timer=%s", &tmp)
+			if tmp == "true" {
+				config.EnableTimer = true
+			}
 		}
 	}
 
@@ -64,6 +71,8 @@ func main() {
 		"config", configPath,
 		"output", dstDirPath,
 	)
+
+	start := time.Now()
 
 	// ---- load config ----
 	slog.Info("init config", "path", configPath)
@@ -92,6 +101,11 @@ func main() {
 	slog.Info("init installer")
 	installer.Init()
 
+	elapsed := time.Since(start)
+	config.BuildTime += elapsed
+
+	start = time.Now()
+
 	slog.Info("install dependencies")
 	installer.Install(config.Libs, true)
 
@@ -105,6 +119,12 @@ func main() {
 	
 	builder.RenderDigestFile(dstDirPath, configPath)
 	slog.Info(fmt.Sprintf("LOCK distribution %s with digest %s and info write to %s/digest.yaml", config.Cfg.MetaData.Distribution, docker.GetImageInspect(config.ImageTag).RepoDigests[0], dstDirPath))
+	elapsed = time.Since(start)
+	config.BuildTime += elapsed
+
+	if config.EnableTimer {
+		slog.Info(fmt.Sprintf("Build time: %.2fs", config.BuildTime.Seconds()))
+	}
 }
 
 // import (

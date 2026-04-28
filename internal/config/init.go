@@ -3,6 +3,8 @@ package config
 import (
 	"fmt"
 	"log/slog"
+	"math/rand/v2"
+	"strconv"
 	"strings"
 	"time"
 )
@@ -34,6 +36,9 @@ func Init(configPath string) {
 	}
 
 	slog.Info(fmt.Sprintf("Build command: <%s>", BuildCmd))
+
+
+	ContainerName += strconv.FormatInt(int64(rand.Int()), 10)
 
 	// fmt.Println("Dependencies:")
 	for _, dep := range Cfg.Dependencies {
